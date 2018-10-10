@@ -1,18 +1,27 @@
 volatile long pulsos=0;
-double error,Setup,RPM_Motor=0;
-double ei,ep,ed,kp=.73,ki=.36,kd=.09;
+double error,Setup1,Setup,RPM_Motor=0;
+double ei,ep,ed,kp=.4,ki=.06,kd=.099;
 double PWM;
 void setup() {
  pinMode(6,OUTPUT);
   Serial.begin(57600);
 attachInterrupt(digitalPinToInterrupt(2), velocidad, RISING);
 noInterrupts();
-Setup=250; //referencia en rpm
+Setup1=200; //referencia en rpm
 }
 
 void loop() {
-  RPM_Motor = map(RPM_Motor, 0, 1950, 0, 255);
-  Setup = map(Setup, 0, 1950, 0, 255);
+  interrupts();
+  delay(99);
+  noInterrupts();
+  RPM_Motor = pulsos*150;
+  pulsos=0;
+ Setup=Setup1;
+ 
+ Serial.print("Velocidad del motor:  ");
+ Serial.println(RPM_Motor);
+  RPM_Motor = map(RPM_Motor, 0, 2250, 0, 255);
+  Setup = map(Setup, 0, 2250, 0, 255);
   error = Setup - RPM_Motor; //Calculo la diferencia entre la velocidad deseada y la real
  Serial.print("Relacion de RPM a PWM:  ");
   Serial.println(RPM_Motor);
@@ -33,26 +42,17 @@ void loop() {
   Serial.println(ed);
   Serial.print("PWM inyectado:  ");
   Serial.println(PWM);
-  if(PWM>255)
-  {
-  analogWrite(6,255);
-  }
-  else
-  {
-    analogWrite(6,PWM);
-  }
-  interrupts();
-  delay(99);
-  noInterrupts();
-  RPM_Motor = pulsos*150;
-  pulsos=0;
- Setup=250;
- Serial.print("Velocidad del motor:  ");
- Serial.println(RPM_Motor);
- PWM=0;
+ analogWrite(6,PWM); 
+if(PWM>255)
+{
+ analogWrite(6,255);
+}
+
+
  }
 
 void velocidad()
 {
   pulsos++;
 }
+
