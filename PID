@@ -1,13 +1,13 @@
 volatile long pulsos=0;
 double error,Setup1,Setup,RPM_Motor=0;
-double ei,ep,ed,kp=.4,ki=.06,kd=.099;
+double ei,ep,ed,kp=.4,ki=.05,kd=.09;
 double PWM;
 void setup() {
  pinMode(6,OUTPUT);
   Serial.begin(57600);
 attachInterrupt(digitalPinToInterrupt(2), velocidad, RISING);
 noInterrupts();
-Setup1=200; //referencia en rpm
+Setup1=1500; //referencia en rpm
 }
 
 void loop() {
@@ -47,7 +47,10 @@ if(PWM>255)
 {
  analogWrite(6,255);
 }
-
+if(PWM<40)
+{
+ analogWrite(6,40);
+}
 
  }
 
@@ -55,4 +58,5 @@ void velocidad()
 {
   pulsos++;
 }
+
 
